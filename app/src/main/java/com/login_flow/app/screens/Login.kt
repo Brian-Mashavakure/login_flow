@@ -17,97 +17,83 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.login_flow.R
 import com.login_flow.app.components.ButtonComponent
-import com.login_flow.app.components.CheckBoxComponent
 import com.login_flow.app.components.ClickableLoginTextComponent
 import com.login_flow.app.components.CustomTextField
 import com.login_flow.app.components.DividerTextComponent
 import com.login_flow.app.components.HeaderTextComponent
 import com.login_flow.app.components.NormalTextComponent
 import com.login_flow.app.components.PasswordTextField
+import com.login_flow.app.components.UnderlinedTextComponent
 import com.login_flow.app.navigation.PostOfficeAppRouter
 import com.login_flow.app.navigation.Screen
-import com.login_flow.ui.theme.Gray
+import com.login_flow.app.navigation.SystemBackButtonHandler
 
 @Composable
-fun SignUp(){
+fun Login(){
     Surface(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(28.dp)
     ){
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(3.dp),
             verticalArrangement = Arrangement.Center,
         ){
-
             NormalTextComponent(value = stringResource(id = R.string.hello))
 
-            HeaderTextComponent(value = stringResource(id = R.string.create_account))
+            HeaderTextComponent(value = stringResource(id = R.string.welcome))
 
             Spacer(modifier = Modifier.height(15.dp))
             
             CustomTextField(
-                labelValue = stringResource(id = R.string.firstname),
-                painterResource = painterResource(id = R.drawable.profile),
-                iconDescription = "profile icon"
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            CustomTextField(
-                labelValue = stringResource(id = R.string.lastname),
-                painterResource = painterResource(id = R.drawable.profile),
-                iconDescription = "profile icon"
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            CustomTextField(
                 labelValue = stringResource(id = R.string.email),
                 painterResource = painterResource(id = R.drawable.email),
-                iconDescription = "mail icon"
+                iconDescription = "Email icon"
             )
-
+            
             Spacer(modifier = Modifier.height(5.dp))
 
             PasswordTextField(
                 labelValue = stringResource(id = R.string.password),
                 iconResource = painterResource(id = R.drawable.password),
-                iconDescription = "padlock icon,"
+                iconDescription = "Password icon"
             )
 
-            Spacer(modifier = Modifier.height(5.dp))
-            
-            CheckBoxComponent(
-                value = stringResource(id = R.string.terms_and_conditions),
-                onTextSelected = {
-                    PostOfficeAppRouter.navigateTo(Screen.TermsAndConditions)
-                }
-                )
-            
-            Spacer(modifier = Modifier.height(39.dp))
-            
-            ButtonComponent(value = stringResource(id = R.string.register))
-
             Spacer(modifier = Modifier.height(10.dp))
+            
+            UnderlinedTextComponent(value = stringResource(id = R.string.forgot_password))
+
+            Spacer(modifier = Modifier.height(35.dp))
+
+
+            ButtonComponent(value = stringResource(id = R.string.login))
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             DividerTextComponent()
-            
+
             Spacer(modifier = Modifier.height(10.dp))
-            
-            ClickableLoginTextComponent( tryingToLogin = true,onTextSelected = {
-                PostOfficeAppRouter.navigateTo(Screen.Login)
+
+            ClickableLoginTextComponent(tryingToLogin = false, onTextSelected = {
+                PostOfficeAppRouter.navigateTo(Screen.SignUp)
             })
+
+
         }
+
+    }
+
+    SystemBackButtonHandler {
+        PostOfficeAppRouter.navigateTo(Screen.SignUp)
     }
 }
 
-//Preview annotation used to see screen preview in split mode
 @Preview
 @Composable
-fun DefaultPreviewOfSignUpScreen(){
-    SignUp()
+fun LoginScreenPreview(){
+    Login()
 }

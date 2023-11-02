@@ -1,7 +1,10 @@
 package com.login_flow.app.components
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,10 +12,14 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,7 +34,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -35,16 +45,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.login_flow.R
 import com.login_flow.ui.theme.ClickableTextColor
+import com.login_flow.ui.theme.Gray
 import com.login_flow.ui.theme.PrimaryColor
+import com.login_flow.ui.theme.SecondaryColor
 import com.login_flow.ui.theme.TextColor
 
 
@@ -108,7 +122,9 @@ fun CustomTextField(
             focusedLabelColor = PrimaryColor,
             cursorColor = PrimaryColor,
         ),
-        keyboardOptions = KeyboardOptions.Default,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        singleLine = true,
+        maxLines = 1,
         onValueChange = { textValue = it },
         leadingIcon = { Icon(painterResource, contentDescription = iconDescription)}
         )
@@ -121,6 +137,7 @@ fun PasswordTextField(
     iconResource: Painter,
     iconDescription: String,
 ){
+    val localFocusManager = LocalFocusManager.current
     var passwordValue by remember { mutableStateOf("") }
 
     var passwordVisible by remember { mutableStateOf( false ) }
@@ -136,7 +153,12 @@ fun PasswordTextField(
             focusedLabelColor = PrimaryColor,
             cursorColor = PrimaryColor,
         ),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+        singleLine = true,
+        maxLines = 1,
+        keyboardActions = KeyboardActions{
+            localFocusManager.clearFocus()
+        },
         onValueChange = { passwordValue = it },
         leadingIcon = { Icon(iconResource, contentDescription = iconDescription)},
         trailingIcon = {
@@ -176,9 +198,9 @@ fun CheckBoxComponent(
             .heightIn(56.dp),
         verticalAlignment = Alignment.CenterVertically,
     ){
-        val checkedState by remember { mutableStateOf<Boolean>(false) }
+        var checkedState by remember { mutableStateOf(false) }
 
-        Checkbox(checked = checkedState, onCheckedChange = { checkedState != checkedState})
+        Checkbox(checked = checkedState, onCheckedChange = { checkedState = it },  )
         
         ClickableTextComponent(value = value, onTextSelected)
     }
@@ -227,5 +249,138 @@ fun ClickableTextComponent(value: String, onTextSelected: (String) -> Unit){
 
         }
         }
+    )
+}
+
+
+@Composable
+fun ButtonComponent(
+    value: String
+){
+    Button(
+        onClick = {},
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(48.dp),
+        contentPadding = PaddingValues(),
+        colors = ButtonDefaults.buttonColors(Color.Transparent)
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(48.dp)
+                .background(
+                    brush = Brush.horizontalGradient(listOf(SecondaryColor, PrimaryColor)),
+                    shape = RoundedCornerShape(50.dp)
+                ),
+            contentAlignment = Alignment.Center,
+        ){
+            Text(
+                text = value,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+                )
+
+        }
+    }
+
+}
+
+@Composable
+fun DividerTextComponent(){
+    Row (
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ){
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            color = Gray,
+            thickness = 1.dp,
+            )
+
+        Text(
+            text = "or",
+            fontSize = 17.sp,
+            color = TextColor,
+            modifier = Modifier.padding(8.dp)
+            )
+
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            color = Gray,
+            thickness = 1.dp,
+            )
+    }
+}
+
+@Composable
+fun ClickableLoginTextComponent( tryingToLogin: Boolean, onTextSelected: (String) -> Unit){
+    val initialText = if(tryingToLogin) "Already have an account? " else "Don't have an account yet? "
+    val loginText = if(tryingToLogin) "Login" else "Register"
+
+
+    val annotatedString = buildAnnotatedString {
+        append(initialText)
+
+        withStyle(
+            style = SpanStyle(color = ClickableTextColor)
+        ){
+            pushStringAnnotation(tag = loginText, annotation = loginText)
+            append(loginText)
+        }
+
+
+
+    }
+
+    ClickableText(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 30.dp),
+        style = TextStyle(
+            fontSize = 19.sp,
+            fontWeight = FontWeight.Normal,
+            fontStyle = FontStyle.Normal,
+            textAlign = TextAlign.Center,
+        ),
+        text = annotatedString,
+        onClick = {
+                offset -> annotatedString.getStringAnnotations(
+            offset, offset
+        ).firstOrNull()?.also{ span ->
+            Log.d("ClickableTextComponent", "${span.item}")
+
+            if(span.item == loginText){
+                onTextSelected(span.item)
+            }
+
+
+        }
+        }
+    )
+}
+
+
+@Composable
+fun UnderlinedTextComponent(
+    value : String
+){
+    Text(
+        text = value,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 30.dp),
+        style = TextStyle(
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Normal,
+            fontStyle = FontStyle.Normal,
+            textDecoration = TextDecoration.Underline,
+            ),
+        color = Gray,
+        textAlign = TextAlign.Center,
     )
 }

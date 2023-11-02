@@ -9,6 +9,7 @@ import com.login_flow.app.screens.TermsAndConditions
 sealed class Screen(){
     object SignUp: Screen()
     object TermsAndConditions: Screen()
+    object Login: Screen()
 
 }
 
